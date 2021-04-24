@@ -52,4 +52,4 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
     user = get_user_by_username(username)
     if user is None:
         raise credentials_exception
-    return UserBasic(username=user.username)
+    return user

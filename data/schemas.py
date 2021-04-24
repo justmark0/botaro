@@ -12,3 +12,7 @@ class User(UserBasic):
 
 class Token(BaseModel):
     access_token: str
+
+
+class Bot(BaseModel):
+    token: str

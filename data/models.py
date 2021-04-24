@@ -18,7 +18,7 @@ class Bot(Base):
     __tablename__ = "bots"
 
     id = Column(Integer, primary_key=True, index=True)
-    token = Column(String(50), index=True)
+    token = Column(String(50), index=True, unique=True)
     user_id = Column(Integer, ForeignKey("users.id"))
 
     user = relationship("User", back_populates="bots")
