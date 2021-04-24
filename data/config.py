@@ -1,3 +1,4 @@
+from passlib.context import CryptContext
 from dotenv import load_dotenv
 import os
 
@@ -11,6 +12,7 @@ SECRET_KEY = os.getenv("SECRET_KEY") or "a63d04c31b4145d4d027481c919cd5d0dfba5ac
 SALT = os.getenv("SALT") or SECRET_KEY[:len(SECRET_KEY) // 2:]
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Database
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/data"

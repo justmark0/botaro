@@ -1,13 +1,14 @@
-from utils.auth import *
 from data.database import engine
-import data
+from utils.auth import *
+import sys
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-def get_db():
-    return database.db
+@app.get("/")
+def index():
+    return 'You can go to the <a href="/docs"> docs</a> to see the documentation>'
 
 
 @app.post("/token", response_model=Token)
@@ -20,11 +21,23 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"usr": user.username}, expires_delta=access_token_expires
     )
     return {"access_token": access_token}
 
 
-@app.get("/users/me/", response_model=User)
-async def read_users_me(current_user: User = Depends(get_current_active_user)):
-    return current_user
+@app.post("/me", response_model=UserBasic)
+async def read_users_me(form_data: Token):
+    user = await get_current_user(form_data.access_token)
+    if user is not None:
+        return user
+    return {"message": "No such user"}
+
+
+@app.post("/reg")
+def registrate_new_user(form_data: User):
+    try:
+        create_user(form_data)
+    except Exception as e:
+        return {"message": e.args[0]}
+    return {"message": "success"}
