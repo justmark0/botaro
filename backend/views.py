@@ -4,6 +4,8 @@ from multiprocessing import Process
 import utils.bot
 from data.database import engine
 from utils.auth import *
+import signal
+import os
 
 
 models.Base.metadata.create_all(bind=engine)
@@ -92,5 +94,5 @@ async def delete_my_bot(auth: Token, bot_data: Bot):
         if element['token'] == bot_data.token:
             process = element['pid']
     if process != -1:
-        process.kill()
+        os.kill(process, signal.SIGTERM)
     return {"message": "success"}
