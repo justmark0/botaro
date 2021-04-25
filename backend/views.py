@@ -4,7 +4,6 @@ from multiprocessing import Process
 import utils.bot
 from data.database import engine
 from utils.auth import *
-import signal
 import os
 
 
@@ -97,6 +96,5 @@ async def delete_my_bot(auth: Token, bot_data: Bot):
         if element['token'] == bot_data.token:
             process = element['pid']
     if process != -1:
-        print(process)
-        os.kill(process, signal.SIGTERM)
+        os.kill(process, 1)
     return {"message": "success"}
