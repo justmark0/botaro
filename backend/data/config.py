@@ -17,3 +17,5 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 # Database
 # SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/data"
 SQLALCHEMY_DATABASE_URL = os.getenv("SQLALCHEMY_DATABASE_URL") or "sqlite:///./db.sqlite3"
+
+bot_processes = []

@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas, config, database
 
 
-def get_user(user_id: int, db: Session = database.db):
+def get_user(user_id: int, db: Session = database.db) -> models.User:
     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
@@ -16,6 +16,11 @@ def get_users(db: Session = database.db) -> list[models.User]:
 
 def get_bots(db: Session = database.db) -> list[models.Bot]:
     return db.query(models.Bot).all()
+
+
+def delete_bot(user_id, bot_token, db: Session = database.db) -> list[models.Bot]:
+    return db.query(models.Bot).filter(models.Bot.token == bot_token,
+                                       models.Bot.user_id == user_id).delete()
 
 
 def create_user(user: schemas.User, db: Session = database.db):

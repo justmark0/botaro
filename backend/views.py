@@ -4,7 +4,7 @@ from multiprocessing import Process
 import utils.bot
 from data.database import engine
 from utils.auth import *
-import sys
+
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
@@ -12,7 +12,7 @@ app = FastAPI()
 
 @app.get("/", response_class=HTMLResponse)
 def index():
-    return 'You can go to the <a href=\"/docs\"> docs</a> to see the documentation>'
+    return 'You can go to the <a href=\"/docs\"> docs</a> to see the documentation'
 
 
 @app.post("/token", response_model=Token)
@@ -60,4 +60,37 @@ async def registrate_new_bot(auth: Token, bot_data: Bot):
         return {"message": e.args[0]}
     p = Process(target=utils.bot.start_bot, args=(bot_data.token,))
     p.start()
+    bot_processes.append({"token": bot_data.token, "pid": p.pid})
+    return {"message": "success"}
+
+
+@app.post("/my_bots")
+async def get_my_bots(auth: Token):
+    user = await get_current_user(auth.access_token)
+    if user is None:
+        return {"message": "No such user"}
+    bot_tokens = []
+    for bot in user.bots:
+        bot_tokens.append(bot.token)
+    return {"data": bot_tokens}
+
+
+@app.post("/delete_bot")
+async def delete_my_bot(auth: Token, bot_data: Bot):
+    user = await get_current_user(auth.access_token)
+    if user is None:
+        return {"message": "No such user"}
+    in_list = False
+    for bot in user.bots:
+        if bot.token == bot_data.token:
+            in_list = True
+    if not in_list:
+        return {"message": "You cannot delete this bot"}
+    delete_bot(user.id, bot_data.token)
+    process = -1
+    for element in bot_processes:
+        if element['token'] == bot_data.token:
+            process = element['pid']
+    if process != -1:
+        process.kill()
     return {"message": "success"}
