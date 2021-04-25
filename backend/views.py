@@ -88,11 +88,15 @@ async def delete_my_bot(auth: Token, bot_data: Bot):
             in_list = True
     if not in_list:
         return {"message": "You cannot delete this bot"}
-    delete_bot(user.id, bot_data.token)
+    try:
+        delete_bot(user.id, bot_data.token)
+    except Exception as e:
+        return {"message": e.args[0]}
     process = -1
     for element in bot_processes:
         if element['token'] == bot_data.token:
             process = element['pid']
     if process != -1:
+        print(process)
         os.kill(process, signal.SIGTERM)
     return {"message": "success"}

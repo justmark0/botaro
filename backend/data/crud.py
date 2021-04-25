@@ -19,8 +19,11 @@ def get_bots(db: Session = database.db) -> list[models.Bot]:
 
 
 def delete_bot(user_id, bot_token, db: Session = database.db) -> list[models.Bot]:
-    return db.query(models.Bot).filter(models.Bot.token == bot_token,
-                                       models.Bot.user_id == user_id).delete()
+    bot = db.query(models.Bot).filter(models.Bot.token == bot_token,
+                                      models.Bot.user_id == user_id).first()
+    if bot is None:
+        raise Exception("No such bot")
+    return db.delete(bot)
 
 
 def create_user(user: schemas.User, db: Session = database.db):

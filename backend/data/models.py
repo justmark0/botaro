@@ -11,7 +11,6 @@ class User(Base):
     hashed_password = Column(String(256))
 
     bots = relationship("Bot", back_populates="user")
-    tokens = relationship("Token", back_populates="user")
 
 
 class Bot(Base):
@@ -22,13 +21,3 @@ class Bot(Base):
     user_id = Column(Integer, ForeignKey("users.id"))
 
     user = relationship("User", back_populates="bots")
-
-
-class Token(Base):
-    __tablename__ = "tokens"
-
-    id = Column(Integer, primary_key=True, index=True)
-    token = Column(String, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-
-    user = relationship("User", back_populates="tokens")
